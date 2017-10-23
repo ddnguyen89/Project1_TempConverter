@@ -1,5 +1,6 @@
 package nguyen.project1_tempconverter;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -22,6 +23,8 @@ public class TempConverterActivity extends AppCompatActivity implements OnEditor
     //format for degrees
     NumberFormat degree = NumberFormat.getNumberInstance();
 
+    private SharedPreferences savedValues;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +36,9 @@ public class TempConverterActivity extends AppCompatActivity implements OnEditor
 
         //set listeners
         fahrenheitET.setOnEditorActionListener(this);
+
+        //get the shared preferences
+        savedValues = getSharedPreferences("savedValues", MODE_PRIVATE);
     }
 
     @Override
@@ -55,5 +61,29 @@ public class TempConverterActivity extends AppCompatActivity implements OnEditor
 
         //display the results
         celciusTV.setText(degree.format(celcius) + degreeSymbol);
+    }
+
+    @Override
+    protected void onPause() {
+        //save instance variables
+        SharedPreferences.Editor editor = savedValues.edit();
+        editor.putString("fahrenheitString", fahrenheitString);
+        editor.commit();
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //get the instance variables
+        fahrenheitString = savedValues.getString("fahrenheitString", "");
+
+        //set the fahrenheit amount on its widget
+        fahrenheitET.setText(fahrenheitString);
+
+        //calculate and display
+        calculateAndDisplay();
     }
 }
