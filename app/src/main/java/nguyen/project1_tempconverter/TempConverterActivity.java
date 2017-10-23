@@ -19,11 +19,13 @@ public class TempConverterActivity extends AppCompatActivity implements OnEditor
     private String fahrenheitString = "";
     private float fahrenheit;
     private char degreeSymbol = (char)0x00B0;
+    private float celcius;
 
     //format for degrees
     NumberFormat degree = NumberFormat.getNumberInstance();
 
     private SharedPreferences savedValues;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,8 @@ public class TempConverterActivity extends AppCompatActivity implements OnEditor
 
         //get the shared preferences
         savedValues = getSharedPreferences("savedValues", MODE_PRIVATE);
+
+        fahrenheitString = "";
     }
 
     @Override
@@ -54,11 +58,10 @@ public class TempConverterActivity extends AppCompatActivity implements OnEditor
             fahrenheit = 0;
         } else {
             fahrenheit = Float.parseFloat(fahrenheitString);
+
+            //calculate celcius
+            celcius = (fahrenheit - 32) * 5 / 9;
         }
-
-        //calculate celcius
-        float celcius = (fahrenheit - 32) * 5 / 9;
-
         //display the results
         celciusTV.setText(degree.format(celcius) + degreeSymbol);
     }
@@ -66,7 +69,7 @@ public class TempConverterActivity extends AppCompatActivity implements OnEditor
     @Override
     protected void onPause() {
         //save instance variables
-        SharedPreferences.Editor editor = savedValues.edit();
+        editor = savedValues.edit();
         editor.putString("fahrenheitString", fahrenheitString);
         editor.commit();
 
